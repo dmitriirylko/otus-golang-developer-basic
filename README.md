@@ -1,2 +1,6 @@
-# otus-golang-developer-basic
-Repo for course "Golang Developer. Basic" by OTUS
+# ДЗ#3 "Шахматная доска"
+Создается строка, формирующая шахматную доску и выводится в консоль. Пользователь может задавать размер доски с помощью cli-аргументов:
+```console
+go run main.go <size>
+```
+
