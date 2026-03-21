@@ -16,7 +16,7 @@ func makeConfig() GameConfig {
 	const (
 		defaultFieldSize = 8
 		minFieldSize     = 1
-		maxFieldSize     = 100
+		maxFieldSize     = 26
 		defaultPlayer1   = "Player1"
 		defaultPlayer2   = "Player2"
 	)
@@ -46,27 +46,36 @@ func makeConfig() GameConfig {
 	}
 }
 
-func makeField(size int) string {
-	strLen := size*size + size
+func makeField(pCfg *GameConfig) string {
 	var strBuilder strings.Builder
+	indent := len(strconv.Itoa(pCfg.fieldSize))
+	strLen := (pCfg.fieldSize + 1) * (pCfg.fieldSize + indent + 1)
 	strBuilder.Grow(strLen)
-	for i := 0; i < size; i++ {
+	for i := 0; i < indent; i++ {
+		strBuilder.WriteRune(' ')
+	}
+	for i, r := 0, 'a'; i < pCfg.fieldSize; i, r = i+1, r+1 {
+		strBuilder.WriteRune(r)
+	}
+	strBuilder.WriteByte('\n')
+	for i := 0; i < pCfg.fieldSize; i++ {
+		strBuilder.WriteString(fmt.Sprintf("%*d", indent, pCfg.fieldSize-i))
 		var isBlack bool = i%2 == 1
-		for j := 0; j < size; j++ {
+		for j := 0; j < pCfg.fieldSize; j++ {
 			if isBlack {
-				strBuilder.WriteByte('#')
+				strBuilder.WriteRune('#')
 			} else {
-				strBuilder.WriteByte(' ')
+				strBuilder.WriteRune(' ')
 			}
 			isBlack = !isBlack
 		}
-		strBuilder.WriteByte('\n')
+		strBuilder.WriteRune('\n')
 	}
 	return strBuilder.String()
 }
 
 func main() {
 	cfg := makeConfig()
-	field := makeField(cfg.fieldSize)
+	field := makeField(&cfg)
 	fmt.Print(field)
 }
