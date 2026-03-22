@@ -49,7 +49,7 @@ func makeConfig() GameConfig {
 func makeField(pCfg *GameConfig) string {
 	var strBuilder strings.Builder
 	indent := len(strconv.Itoa(pCfg.fieldSize))
-	strLen := (pCfg.fieldSize + 1) * (pCfg.fieldSize + indent + 1)
+	strLen := (pCfg.fieldSize+1)*(pCfg.fieldSize+indent+1) + len(pCfg.player1) + len(pCfg.player2) + 2
 	strBuilder.Grow(strLen)
 	for i := 0; i < indent; i++ {
 		strBuilder.WriteRune(' ')
@@ -68,6 +68,12 @@ func makeField(pCfg *GameConfig) string {
 				strBuilder.WriteRune(' ')
 			}
 			isBlack = !isBlack
+		}
+		if i == 0 {
+			strBuilder.WriteString(" " + pCfg.player1)
+		}
+		if i == 1 {
+			strBuilder.WriteString(" " + pCfg.player2)
 		}
 		strBuilder.WriteRune('\n')
 	}
