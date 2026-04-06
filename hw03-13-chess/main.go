@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chess/chess"
 	"fmt"
 	"strconv"
 	"strings"
@@ -49,8 +50,6 @@ func makeConfig() GameConfig {
 func makeField(pCfg *GameConfig) string {
 	var strBuilder strings.Builder
 	indent := len(strconv.Itoa(pCfg.fieldSize))
-	strLen := (pCfg.fieldSize+1)*(pCfg.fieldSize+indent+1) + len(pCfg.player1) + len(pCfg.player2) + 2
-	strBuilder.Grow(strLen)
 	for i := 0; i < indent; i++ {
 		strBuilder.WriteRune(' ')
 	}
@@ -58,11 +57,23 @@ func makeField(pCfg *GameConfig) string {
 		strBuilder.WriteRune(r)
 	}
 	strBuilder.WriteByte('\n')
+	pieceColor := chess.ColorEmpty
 	for i := 0; i < pCfg.fieldSize; i++ {
+		switch i {
+		case 0, 1:
+			pieceColor = chess.Black
+		case 6, 7:
+			pieceColor = chess.White
+		default:
+			pieceColor = chess.ColorEmpty
+		}
 		strBuilder.WriteString(fmt.Sprintf("%*d", indent, pCfg.fieldSize-i))
 		var isBlack bool = i%2 == 1
 		for j := 0; j < pCfg.fieldSize; j++ {
-			if isBlack {
+			piece := chess.PosColor2Piece(j, pieceColor)
+			if piece != chess.PieceEmpty {
+				strBuilder.WriteRune(piece.Rune())
+			} else if isBlack {
 				strBuilder.WriteRune('#')
 			} else {
 				strBuilder.WriteRune(' ')
