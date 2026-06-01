@@ -1,4 +1,4 @@
-package chess
+package pieces
 
 type Color int
 

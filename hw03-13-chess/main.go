@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chess/chess"
+	"chess/internal/model"
 	"fmt"
 	"strconv"
 	"strings"
@@ -59,30 +59,30 @@ func makeField(pCfg *GameConfig) string {
 	}
 	strBuilder.WriteByte('\n')
 	// Заполнение n...1 строк доски
-	pieceColor := chess.ColorEmpty
+	pieceColor := pieces.ColorEmpty
 	isPawn := false
 	for i := 0; i < pCfg.fieldSize; i++ {
 		switch i {
 		case 0:
-			pieceColor = chess.Black
+			pieceColor = pieces.Black
 			isPawn = false
 		case 1:
-			pieceColor = chess.Black
+			pieceColor = pieces.Black
 			isPawn = true
 		case pCfg.fieldSize-2:
-			pieceColor = chess.White
+			pieceColor = pieces.White
 			isPawn = true
 		case pCfg.fieldSize-1:
-			pieceColor = chess.White
+			pieceColor = pieces.White
 			isPawn = false
 		default:
-			pieceColor = chess.ColorEmpty
+			pieceColor = pieces.ColorEmpty
 		}
 		strBuilder.WriteString(fmt.Sprintf("%*d", indent, pCfg.fieldSize-i))
 		var isBlack bool = i%2 == 1
 		for j := 0; j < pCfg.fieldSize; j++ {
-			piece := chess.PosColor2Piece(j, pieceColor, isPawn)
-			if piece != chess.PieceEmpty {
+			piece := pieces.PosColor2Piece(j, pieceColor, isPawn)
+			if piece != pieces.PieceEmpty {
 				strBuilder.WriteRune(piece.Rune())
 			} else if isBlack {
 				strBuilder.WriteRune('#')
