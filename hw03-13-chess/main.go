@@ -49,6 +49,7 @@ func makeConfig() GameConfig {
 
 func makeField(pCfg *GameConfig) string {
 	var strBuilder strings.Builder
+	// Заполнение первой строки с буквами
 	indent := len(strconv.Itoa(pCfg.fieldSize))
 	for i := 0; i < indent; i++ {
 		strBuilder.WriteRune(' ')
@@ -57,20 +58,30 @@ func makeField(pCfg *GameConfig) string {
 		strBuilder.WriteRune(r)
 	}
 	strBuilder.WriteByte('\n')
+	// Заполнение n...1 строк доски
 	pieceColor := chess.ColorEmpty
+	isPawn := false
 	for i := 0; i < pCfg.fieldSize; i++ {
 		switch i {
-		case 0, 1:
+		case 0:
 			pieceColor = chess.Black
-		case 6, 7:
+			isPawn = false
+		case 1:
+			pieceColor = chess.Black
+			isPawn = true
+		case pCfg.fieldSize-2:
 			pieceColor = chess.White
+			isPawn = true
+		case pCfg.fieldSize-1:
+			pieceColor = chess.White
+			isPawn = false
 		default:
 			pieceColor = chess.ColorEmpty
 		}
 		strBuilder.WriteString(fmt.Sprintf("%*d", indent, pCfg.fieldSize-i))
 		var isBlack bool = i%2 == 1
 		for j := 0; j < pCfg.fieldSize; j++ {
-			piece := chess.PosColor2Piece(j, pieceColor)
+			piece := chess.PosColor2Piece(j, pieceColor, isPawn)
 			if piece != chess.PieceEmpty {
 				strBuilder.WriteRune(piece.Rune())
 			} else if isBlack {

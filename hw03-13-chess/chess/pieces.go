@@ -109,7 +109,15 @@ func (pt PieceType) Piece(color Color) Piece {
 	}
 }
 
-func PosColor2Piece(pos int, color Color) Piece {
+func PosColor2Piece(pos int, color Color, isPawn bool) Piece {
+	if pos > 7 {
+		return PieceEmpty
+	}
+
+	if isPawn {
+		return PieceType(Pawn).Piece(color)
+	}
+
 	switch {
 	case pos == 0 || pos == 7:
 		return PieceType(Rook).Piece(color)
