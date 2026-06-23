@@ -1,50 +1,109 @@
 package main
 
 import (
+	"chess/chess"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
 
-func findFieldSize() int {
+type GameConfig struct {
+	fieldSize int
+	player1   string
+	player2   string
+}
+
+func makeConfig() GameConfig {
 	const (
 		defaultFieldSize = 8
 		minFieldSize     = 1
-		maxFieldSize     = 100
+		maxFieldSize     = 26
+		defaultPlayer1   = "Player1"
+		defaultPlayer2   = "Player2"
 	)
-	if len(os.Args) > 1 {
-		cliFieldSize, err := strconv.Atoi(os.Args[1])
-		if err == nil && cliFieldSize >= minFieldSize && cliFieldSize <= maxFieldSize {
-			return cliFieldSize
-		}
+	var err error
+	var fieldSize int
+	var player1, player2, fieldSizeStr string
+	fmt.Print("Insert field size: ")
+	if _, err = fmt.Scan(&fieldSizeStr); err != nil {
+		fieldSize = defaultFieldSize
 	}
-	return defaultFieldSize
+	fieldSize, err = strconv.Atoi(fieldSizeStr)
+	if err != nil || fieldSize < minFieldSize || fieldSize > maxFieldSize {
+		fieldSize = defaultFieldSize
+	}
+	fmt.Print("Insert first player name: ")
+	if _, err = fmt.Scan(&player1); err != nil {
+		player1 = defaultPlayer1
+	}
+	fmt.Print("Insert second player name: ")
+	if _, err = fmt.Scan(&player2); err != nil {
+		player2 = defaultPlayer2
+	}
+	return GameConfig{
+		fieldSize: fieldSize,
+		player1:   player1,
+		player2:   player2,
+	}
 }
 
-func makeField(size int) string {
-	strLen := size*size + size
+func makeField(pCfg *GameConfig) string {
 	var strBuilder strings.Builder
-	strBuilder.Grow(strLen)
-	for i := 0; i < size; i++ {
+	// Заполнение первой строки с буквами
+	indent := len(strconv.Itoa(pCfg.fieldSize))
+	for i := 0; i < indent; i++ {
+		strBuilder.WriteRune(' ')
+	}
+	for i, r := 0, 'a'; i < pCfg.fieldSize; i, r = i+1, r+1 {
+		strBuilder.WriteRune(r)
+	}
+	strBuilder.WriteByte('\n')
+	// Заполнение n...1 строк доски
+	pieceColor := chess.ColorEmpty
+	isPawn := false
+	for i := 0; i < pCfg.fieldSize; i++ {
+		switch i {
+		case 0:
+			pieceColor = chess.Black
+			isPawn = false
+		case 1:
+			pieceColor = chess.Black
+			isPawn = true
+		case pCfg.fieldSize-2:
+			pieceColor = chess.White
+			isPawn = true
+		case pCfg.fieldSize-1:
+			pieceColor = chess.White
+			isPawn = false
+		default:
+			pieceColor = chess.ColorEmpty
+		}
+		strBuilder.WriteString(fmt.Sprintf("%*d", indent, pCfg.fieldSize-i))
 		var isBlack bool = i%2 == 1
-		for j := 0; j < size; j++ {
-			if isBlack {
-				strBuilder.WriteByte('#')
+		for j := 0; j < pCfg.fieldSize; j++ {
+			piece := chess.PosColor2Piece(j, pieceColor, isPawn)
+			if piece != chess.PieceEmpty {
+				strBuilder.WriteRune(piece.Rune())
+			} else if isBlack {
+				strBuilder.WriteRune('#')
 			} else {
-				strBuilder.WriteByte(' ')
+				strBuilder.WriteRune(' ')
 			}
 			isBlack = !isBlack
 		}
-		strBuilder.WriteByte('\n')
+		if i == 0 {
+			strBuilder.WriteString(" " + pCfg.player1)
+		}
+		if i == 1 {
+			strBuilder.WriteString(" " + pCfg.player2)
+		}
+		strBuilder.WriteRune('\n')
 	}
 	return strBuilder.String()
 }
 
 func main() {
-	fmt.Println("Let's play chess")
-	fieldSize := findFieldSize()
-	fmt.Printf("Field size is %d\n", fieldSize)
-	field := makeField(fieldSize)
+	cfg := makeConfig()
+	field := makeField(&cfg)
 	fmt.Print(field)
 }
