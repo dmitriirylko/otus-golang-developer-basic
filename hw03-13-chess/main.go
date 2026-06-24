@@ -103,7 +103,7 @@ func makeField(pCfg *GameConfig) string {
 }
 
 func main() {
-	cfg := makeConfig()
-	field := makeField(&cfg)
-	fmt.Print(field)
+	// cfg := makeConfig()
+	// field := makeField(&cfg)
+	// fmt.Print(field)
 }
