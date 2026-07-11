@@ -3,14 +3,15 @@ package board
 type Color uint8
 
 const (
-	White Color = iota
+	NoneColor Color = iota
+	White
 	Black
 )
 
 type PieceType uint8
 
 const (
-	None PieceType = iota
+	NoneType PieceType = iota
 	Pawn
 	Knight
 	Bishop
@@ -19,8 +20,42 @@ const (
 	King
 )
 
+func (t PieceType) SanLetter() rune {
+	switch t {
+	case Knight:
+		return 'N'
+	case Bishop:
+		return 'B'
+	case Rook:
+		return 'R'
+	case Queen:
+		return 'Q'
+	case King:
+		return 'K'
+	default:
+		return '?'
+	}
+}
+
+func SanLetterToPieceType(r rune) PieceType {
+	switch r {
+	case 'N':
+		return Knight
+	case 'B':
+		return Bishop
+	case 'R':
+		return Rook
+	case 'Q':
+		return Queen
+	case 'K':
+		return King
+	default:
+		return NoneType
+	}
+}
+
 type Piece struct {
-	Type PieceType
+	Type  PieceType
 	Color Color
 }
 
@@ -33,29 +68,29 @@ func (p Piece) String() string {
 		return "♟︎"
 	case Knight:
 		if p.Color == White {
-            return "♘"
-        }
-        return "♞"
+			return "♘"
+		}
+		return "♞"
 	case Bishop:
 		if p.Color == White {
-            return "♗"
-        }
-        return "♝"
+			return "♗"
+		}
+		return "♝"
 	case Rook:
 		if p.Color == White {
-            return "♖"
-        }
-        return "♜"
+			return "♖"
+		}
+		return "♜"
 	case Queen:
 		if p.Color == White {
-            return "♕"
-        }
-        return "♛"
+			return "♕"
+		}
+		return "♛"
 	case King:
 		if p.Color == White {
-            return "♔"
-        }
-        return "♚"
+			return "♔"
+		}
+		return "♚"
 	default:
 		return "?"
 	}
@@ -65,19 +100,6 @@ func NewPiece(t PieceType, c Color) *Piece {
 	return &Piece{Type: t, Color: c}
 }
 
-func (p Piece) SanLetter() string {
-	switch p.Type {
-	case Knight:
-        return "N"
-	case Bishop:
-        return "B"
-	case Rook:
-        return "R"
-	case Queen:
-        return "Q"
-	case King:
-        return "K"
-	default:
-		return ""
-	}
+func (p Piece) SanLetter() rune {
+	return p.Type.SanLetter()
 }

@@ -1,34 +1,72 @@
 package move
 
 import (
+	"chess/internal/model/board"
 	"errors"
 	"strings"
-	"unicode"
-	"chess/internal/model/board"
 )
+
+// Ходы будем сериализовывать/десериализовывать следующим образом
+// <color><pieceSan>-<from>-<to>
+// color - цвет фигуры (b/w)
+// pieceSan - SAN представление типа фигуры (N/B/R/Q/K)
+// from - откуда ход в формате столбец-строка (например, a0)
+// to - куда ходв формате столбец-строка (например, a1)
 
 var (
-	InvalidFormat = errors.New("Invalid format of Standard Algebraic Notation")
-	AmbiguousSan  = errors.New("Multiple moves match")
-	OutOfBounds   = errors.New("Square is outside of the board")
+	InvalidSeparation = errors.New("Invalid separation of string")
+	InvalidFormat     = errors.New("Invalid format")
+	InvalidColor      = errors.New("Invalid color")
+	InvalidPiece      = errors.New("Invalid piece")
+	OutOfBounds       = errors.New("Square is outside of the board")
 )
 
-func Parse(s string, b *board.Board) (Move, error) {
-	var pieceLetter rune
-	var isCapture bool
-
-	s = strings.TrimSpace(s)
-	if len(s) > 0 && unicode.IsUpper(rune(s[0])) {
-		pieceLetter = rune(s[0])
-		s = s[1:]
+func (m Move) String() string {
+	var sb strings.Builder
+	switch m.Color {
+	case board.Black:
+		sb.WriteRune('b')
+	case board.White:
+		sb.WriteRune('w')
+	default:
+		return ""
 	}
 
-	if strings.Contains(s, "x") {
-		isCapture = true
-		s = strings.ReplaceAll(s, "x", "")
+	if m.Piece == board.NoneType {
+		return ""
 	}
+	sb.WriteRune(m.Piece.SanLetter())
+	sb.WriteRune('-')
+	sb.WriteString(m.From.String())
+	sb.WriteRune('-')
+	sb.WriteString(m.To.String())
 
-	if len(s) < 2 { return Move{}, InvalidFormat }
+	return sb.String()
+}
 
-	return Move{}, InvalidFormat
+func parseMove(s string) (Move, error) {
+	var m Move
+	parts := strings.Split(s, "-")
+	if len(parts) != 3 {
+		return Move{}, InvalidSeparation
+	}
+	if len(parts[0]) != 2 {
+		return Move{}, InvalidFormat
+	}
+	firstRunes := []rune(parts[0])
+	switch firstRunes[0] {
+	case 'b':
+		m.Color = board.Black
+	case 'w':
+		m.Color = board.White
+	default:
+		return Move{}, InvalidColor
+	}
+	piece := board.SanLetterToPieceType(firstRunes[1])
+	if piece == board.NoneType {
+		return Move{}, InvalidPiece
+	}
+	m.Piece = piece
+
+	return m, nil
 }

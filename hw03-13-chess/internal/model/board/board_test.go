@@ -1,9 +1,10 @@
 package board
 
 import (
-    "testing"
-	"github.com/stretchr/testify/assert"
 	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPieceString(t *testing.T) {
@@ -17,7 +18,7 @@ func TestPieceString(t *testing.T) {
 	assert.Equal(t, piece.String(), "♛")
 
 	piece.Color = Black
-	piece.Type = None
+	piece.Type = NoneType
 	assert.Equal(t, piece.String(), "?")
 }
 
@@ -41,11 +42,11 @@ func TestSquareString(t *testing.T) {
 
 	square.X = 26
 	square.Y = 1
-	assert.Equal(t, square.String(), "(26,1)")
+	assert.Equal(t, square.String(), "")
 }
 
 func TestBoardIndex(t *testing.T) {
-	board := NewBoard(10)
+	board := NewBoard(10, "John", "Rayan")
 	assert.NotNil(t, board)
 	assert.Equal(t, board.index(5, 0), 5)
 	assert.Equal(t, board.index(2, 3), 32)
@@ -53,7 +54,7 @@ func TestBoardIndex(t *testing.T) {
 }
 
 func TestBoardInBounds(t *testing.T) {
-	board := NewBoard(10)
+	board := NewBoard(10, "John", "Rayan")
 	assert.NotNil(t, board)
 	assert.True(t, board.inBounds(0, 0))
 	assert.True(t, board.inBounds(9, 9))
@@ -65,23 +66,23 @@ func TestBoardInBounds(t *testing.T) {
 }
 
 func TestBoardSetGet(t *testing.T) {
-	board := NewBoard(10)
+	board := NewBoard(10, "John", "Rayan")
 	assert.NotNil(t, board)
 	p1 := NewPiece(Pawn, Black)
 	board.setToCoords(1, 1, p1)
 	p2 := NewPiece(Knight, White)
 	board.setToSquare(Square{3, 8}, p2)
-	assert.Nil(t, board.pieceAtCoord(-1, 1))
-	assert.Nil(t, board.pieceAtCoord(1, 10))
+	assert.Nil(t, board.PieceAtCoord(-1, 1))
+	assert.Nil(t, board.PieceAtCoord(1, 10))
 	assert.Nil(t, board.pieceAtSquare(Square{2, 2}))
-	p11 := board.pieceAtCoord(1, 1)
+	p11 := board.PieceAtCoord(1, 1)
 	assert.Equal(t, p1, p11)
 	p22 := board.pieceAtSquare(Square{3, 8})
 	assert.Equal(t, p2, p22)
 }
 
 func TestBoardRender(t *testing.T) {
-	board := NewBoard(10)
+	board := NewBoard(10, "John", "Rayan")
 	assert.NotNil(t, board)
 	board.setToCoords(2, 8, NewPiece(Rook, Black))
 	board.setToCoords(3, 2, NewPiece(King, White))

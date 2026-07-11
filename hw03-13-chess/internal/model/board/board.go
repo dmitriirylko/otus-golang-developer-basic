@@ -1,9 +1,14 @@
 package board
 
 import (
-    "fmt"
-	"strings"
+	"errors"
+	"fmt"
 	"strconv"
+	"strings"
+)
+
+var (
+	InvalidFormat = errors.New("Invalid format")
 )
 
 type Square struct {
@@ -12,26 +17,38 @@ type Square struct {
 }
 
 func (s Square) String() string {
-	// TODO: не захардкоженные границы доски
 	if s.X < 0 || s.Y < 0 || s.X > 25 || s.Y > 25 {
-		return fmt.Sprintf("(%d,%d)", s.X, s.Y)
+		return ""
 	}
 	file := string('a' + rune(s.X))
 	rank := s.Y + 1
 	return fmt.Sprintf("%s%d", file, rank)
 }
 
+func parseSqaure(s string) (Square, error) {
+	var sq Square
+	if len(s) < 2 {
+		return Square{}, InvalidFormat
+	}
+
+	return sq, nil
+}
+
 type Board struct {
-	size int
+	size    int
+	name1   string
+	name2   string
 	squares []*Piece
 }
 
-func NewBoard(sz int) *Board {
-	if sz <= 0 {
+func NewBoard(sz int, name1, name2 string) *Board {
+	if sz <= 0 || sz > 26 {
 		return nil
 	}
 	return &Board{
-		size: sz,
+		size:    sz,
+		name1:   name1,
+		name2:   name2,
 		squares: make([]*Piece, sz*sz),
 	}
 }
@@ -44,7 +61,7 @@ func (b *Board) inBounds(x, y int) bool {
 	return x >= 0 && x < b.size && y >= 0 && y < b.size
 }
 
-func (b *Board) pieceAtCoord(x, y int) *Piece {
+func (b *Board) PieceAtCoord(x, y int) *Piece {
 	if !b.inBounds(x, y) {
 		return nil
 	}
@@ -52,7 +69,7 @@ func (b *Board) pieceAtCoord(x, y int) *Piece {
 }
 
 func (b *Board) pieceAtSquare(sq Square) *Piece {
-	return b.pieceAtCoord(sq.X, sq.Y)
+	return b.PieceAtCoord(sq.X, sq.Y)
 }
 
 func (b *Board) setToCoords(x, y int, p *Piece) {
@@ -66,8 +83,14 @@ func (b *Board) setToSquare(sq Square, p *Piece) {
 	b.setToCoords(sq.X, sq.Y, p)
 }
 
+func LetterToColumn(r rune) int {
+
+}
+
 func ColumnLetter(x int) string {
-	if x < 0 || x >= 26 { return "?" }
+	if x < 0 || x >= 26 {
+		return ""
+	}
 	return string('a' + rune(x))
 }
 
@@ -88,11 +111,11 @@ func (b *Board) Render() string {
 	// Отрисовка строк доски
 	// Строка начинается с номера
 	for y := b.size - 1; y >= 0; y-- {
-		lineNumStr := fmt.Sprintf("%*d", indent, y + 1)
+		lineNumStr := fmt.Sprintf("%*d", indent, y+1)
 		sb.WriteString(lineNumStr)
 		for x := 0; x < b.size; x++ {
 			sb.WriteRune(' ')
-			p := b.pieceAtCoord(x, y)
+			p := b.PieceAtCoord(x, y)
 			if p == nil {
 				if (x+y)%2 == 0 {
 					sb.WriteRune('#')
@@ -117,7 +140,10 @@ func (b *Board) Render() string {
 		sb.WriteRune(' ')
 		sb.WriteRune('a' + rune(i))
 	}
+	sb.WriteString("\n\n")
+	sb.WriteString(b.name1)
 	sb.WriteRune('\n')
+	sb.WriteString(b.name2)
 
 	return sb.String()
 }
