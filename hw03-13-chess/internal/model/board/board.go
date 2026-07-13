@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	InvalidFormat = errors.New("Invalid format")
+	InvalidFormat     = errors.New("Invalid format")
+	InvalidConversion = errors.New("Invalid string to number conversion")
 )
 
 type Square struct {
@@ -25,12 +26,17 @@ func (s Square) String() string {
 	return fmt.Sprintf("%s%d", file, rank)
 }
 
-func parseSqaure(s string) (Square, error) {
+func ParseSquare(s string) (Square, error) {
 	var sq Square
 	if len(s) < 2 {
 		return Square{}, InvalidFormat
 	}
-
+	sq.X = LetterToColumn(rune(s[0]))
+	res, err := strconv.ParseInt(s[1:], 10, 32)
+	if err != nil {
+		return Square{}, InvalidConversion
+	}
+	sq.Y = int(res)
 	return sq, nil
 }
 
@@ -53,41 +59,44 @@ func NewBoard(sz int, name1, name2 string) *Board {
 	}
 }
 
-func (b *Board) index(x, y int) int {
+func (b *Board) Index(x, y int) int {
 	return y*b.size + x
 }
 
-func (b *Board) inBounds(x, y int) bool {
+func (b *Board) InBounds(x, y int) bool {
 	return x >= 0 && x < b.size && y >= 0 && y < b.size
 }
 
 func (b *Board) PieceAtCoord(x, y int) *Piece {
-	if !b.inBounds(x, y) {
+	if !b.InBounds(x, y) {
 		return nil
 	}
-	return b.squares[b.index(x, y)]
+	return b.squares[b.Index(x, y)]
 }
 
-func (b *Board) pieceAtSquare(sq Square) *Piece {
+func (b *Board) PieceAtSquare(sq Square) *Piece {
 	return b.PieceAtCoord(sq.X, sq.Y)
 }
 
-func (b *Board) setToCoords(x, y int, p *Piece) {
-	if !b.inBounds(x, y) {
+func (b *Board) SetToCoords(x, y int, p *Piece) {
+	if !b.InBounds(x, y) {
 		return
 	}
-	b.squares[b.index(x, y)] = p
+	b.squares[b.Index(x, y)] = p
 }
 
-func (b *Board) setToSquare(sq Square, p *Piece) {
-	b.setToCoords(sq.X, sq.Y, p)
+func (b *Board) SetToSquare(sq Square, p *Piece) {
+	b.SetToCoords(sq.X, sq.Y, p)
 }
 
 func LetterToColumn(r rune) int {
-
+	if r < 'a' || r > 'z' {
+		return -1
+	}
+	return int(r - 'a')
 }
 
-func ColumnLetter(x int) string {
+func ColumnToLetter(x int) string {
 	if x < 0 || x >= 26 {
 		return ""
 	}
@@ -144,6 +153,7 @@ func (b *Board) Render() string {
 	sb.WriteString(b.name1)
 	sb.WriteRune('\n')
 	sb.WriteString(b.name2)
+	sb.WriteRune('\n')
 
 	return sb.String()
 }

@@ -22,6 +22,8 @@ const (
 
 func (t PieceType) SanLetter() rune {
 	switch t {
+	case Pawn:
+		return 'P'
 	case Knight:
 		return 'N'
 	case Bishop:
@@ -39,6 +41,8 @@ func (t PieceType) SanLetter() rune {
 
 func SanLetterToPieceType(r rune) PieceType {
 	switch r {
+	case 'P':
+		return Pawn
 	case 'N':
 		return Knight
 	case 'B':
