@@ -20,6 +20,7 @@ const (
 	King
 )
 
+// Отличается от классической SAN нотации тем, что добавлена буква для пешки
 func (t PieceType) SanLetter() rune {
 	switch t {
 	case Pawn:
@@ -39,6 +40,7 @@ func (t PieceType) SanLetter() rune {
 	}
 }
 
+// Отличается от классической SAN нотации тем, что добавлена буква для пешки
 func SanLetterToPieceType(r rune) PieceType {
 	switch r {
 	case 'P':

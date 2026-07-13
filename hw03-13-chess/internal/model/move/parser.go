@@ -45,7 +45,7 @@ func (m Move) String() string {
 	return sb.String()
 }
 
-func parseMove(s string) (Move, error) {
+func ParseMove(s string) (Move, error) {
 	var m Move
 	parts := strings.Split(s, "-")
 	if len(parts) != 3 {
