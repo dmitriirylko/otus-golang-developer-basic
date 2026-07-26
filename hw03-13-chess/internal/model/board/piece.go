@@ -109,3 +109,5 @@ func NewPiece(t PieceType, c Color) *Piece {
 func (p Piece) SanLetter() rune {
 	return p.Type.SanLetter()
 }
+
+func (p *Piece) EntityType() string { return "piece" }

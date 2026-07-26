@@ -14,3 +14,5 @@ type Move struct {
 func NewMove(color board.Color, piece board.PieceType, from, to board.Square) Move {
 	return Move{Color: color, Piece: piece, From: from, To: to}
 }
+
+func (m Move) EntityType() string { return "move" }

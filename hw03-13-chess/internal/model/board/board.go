@@ -27,6 +27,8 @@ func (s Square) String() string {
 	return fmt.Sprintf("%s%d", file, rank)
 }
 
+func (s Square) EntityType() string { return "square" }
+
 func ParseSquare(s string) (Square, error) {
 	var sq Square
 	if len(s) < 2 {
