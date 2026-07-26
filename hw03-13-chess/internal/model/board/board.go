@@ -10,6 +10,7 @@ import (
 var (
 	InvalidFormat     = errors.New("Invalid format")
 	InvalidConversion = errors.New("Invalid string to number conversion")
+	InvalidSize       = errors.New("Invalid board size")
 )
 
 type Square struct {
@@ -47,15 +48,29 @@ type Board struct {
 	squares []*Piece
 }
 
-func NewBoard(sz int, name1, name2 string) *Board {
+func NewBoard(sz int, name1, name2 string) (Board, error) {
 	if sz <= 0 || sz > 26 {
-		return nil
+		return Board{}, InvalidSize
 	}
-	return &Board{
+	b := Board{
 		size:    sz,
 		name1:   name1,
 		name2:   name2,
 		squares: make([]*Piece, sz*sz),
+	}
+	b.setInitialPosition()
+	return b, nil
+}
+
+func (b *Board) setInitialPosition() {
+	standard := []PieceType{Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook}
+	for i := 0; i < b.size && i < len(standard); i++ {
+		if b.size > 2 {
+			b.SetToCoords(i, 1, NewPiece(Pawn, White))
+			b.SetToCoords(i, b.size-2, NewPiece(Pawn, Black))
+		}
+		b.SetToCoords(i, 0, NewPiece(standard[i], White))
+		b.SetToCoords(i, b.size-1, NewPiece(standard[i], Black))
 	}
 }
 

@@ -12,12 +12,12 @@ var (
 )
 
 type Player struct {
-	name string
+	Name string
 }
 
 func (p Player) GetMove() (move.Move, error) {
 	var userInput string
-	fmt.Printf("%s: ", p.name)
+	fmt.Printf("%s: ", p.Name)
 	if _, err := fmt.Scan(&userInput); err != nil {
 		return move.Move{}, InvalidUserInput
 	}

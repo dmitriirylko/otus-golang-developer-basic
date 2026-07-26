@@ -53,28 +53,28 @@ func TestBoardLetterToColumn(t *testing.T) {
 }
 
 func TestBoardIndex(t *testing.T) {
-	b := board.NewBoard(10, "John", "Rayan")
-	assert.NotNil(t, b)
+	b, err := board.NewBoard(10, "John", "Rayan")
+	assert.Nil(t, err)
 	assert.Equal(t, b.Index(5, 0), 5)
 	assert.Equal(t, b.Index(2, 3), 32)
 	assert.Equal(t, b.Index(9, 9), 99)
 }
 
 func TestBoardInBounds(t *testing.T) {
-	board := board.NewBoard(10, "John", "Rayan")
-	assert.NotNil(t, board)
-	assert.True(t, board.InBounds(0, 0))
-	assert.True(t, board.InBounds(9, 9))
-	assert.True(t, board.InBounds(4, 7))
-	assert.False(t, board.InBounds(10, 1))
-	assert.False(t, board.InBounds(10, 11))
-	assert.False(t, board.InBounds(-1, 0))
-	assert.False(t, board.InBounds(5, -1))
+	b, err := board.NewBoard(10, "John", "Rayan")
+	assert.Nil(t, err)
+	assert.True(t, b.InBounds(0, 0))
+	assert.True(t, b.InBounds(9, 9))
+	assert.True(t, b.InBounds(4, 7))
+	assert.False(t, b.InBounds(10, 1))
+	assert.False(t, b.InBounds(10, 11))
+	assert.False(t, b.InBounds(-1, 0))
+	assert.False(t, b.InBounds(5, -1))
 }
 
 func TestBoardSetGet(t *testing.T) {
-	b := board.NewBoard(10, "John", "Rayan")
-	assert.NotNil(t, b)
+	b, err := board.NewBoard(10, "John", "Rayan")
+	assert.Nil(t, err)
 	p1 := board.NewPiece(board.Pawn, board.Black)
 	b.SetToCoords(1, 1, p1)
 	p2 := board.NewPiece(board.Knight, board.White)
@@ -89,8 +89,8 @@ func TestBoardSetGet(t *testing.T) {
 }
 
 func TestBoardRender(t *testing.T) {
-	b := board.NewBoard(10, "John", "Rayan")
-	assert.NotNil(t, b)
+	b, err := board.NewBoard(10, "John", "Rayan")
+	assert.Nil(t, err)
 	b.SetToCoords(2, 8, board.NewPiece(board.Rook, board.Black))
 	b.SetToCoords(3, 2, board.NewPiece(board.King, board.White))
 	fmt.Print(b.Render())
