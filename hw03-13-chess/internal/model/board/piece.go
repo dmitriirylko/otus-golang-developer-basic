@@ -8,6 +8,17 @@ const (
 	Black
 )
 
+func (c Color) Opposite() Color {
+	switch c {
+	case White:
+		return Black
+	case Black:
+		return White
+	default:
+		return NoneColor
+	}
+}
+
 type PieceType uint8
 
 const (

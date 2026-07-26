@@ -1,8 +1,11 @@
 package game
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type GameConfig struct {
@@ -19,25 +22,37 @@ func MakeConfig() GameConfig {
 		defaultPlayer1   = "Player1"
 		defaultPlayer2   = "Player2"
 	)
-	var err error
-	var fieldSize int
-	var player1, player2, fieldSizeStr string
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Insert field size: ")
-	if _, err = fmt.Scan(&fieldSizeStr); err != nil {
-		fieldSize = defaultFieldSize
+	fieldSize := defaultFieldSize
+	if scanner.Scan() {
+		s := strings.TrimSpace(scanner.Text())
+		if s != "" {
+			if n, err := strconv.Atoi(s); err == nil && n >= minFieldSize && n <= maxFieldSize {
+				fieldSize = n
+			}
+		}
 	}
-	fieldSize, err = strconv.Atoi(fieldSizeStr)
-	if err != nil || fieldSize < minFieldSize || fieldSize > maxFieldSize {
-		fieldSize = defaultFieldSize
-	}
+
 	fmt.Print("Insert first player name: ")
-	if _, err = fmt.Scan(&player1); err != nil {
-		player1 = defaultPlayer1
+	player1 := defaultPlayer1
+	if scanner.Scan() {
+		s := strings.TrimSpace(scanner.Text())
+		if s != "" {
+			player1 = s
+		}
 	}
+
 	fmt.Print("Insert second player name: ")
-	if _, err = fmt.Scan(&player2); err != nil {
-		player2 = defaultPlayer2
+	player2 := defaultPlayer2
+	if scanner.Scan() {
+		s := strings.TrimSpace(scanner.Text())
+		if s != "" {
+			player2 = s
+		}
 	}
+
 	return GameConfig{
 		fieldSize: fieldSize,
 		player1:   player1,

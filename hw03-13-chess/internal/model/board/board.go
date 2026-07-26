@@ -64,6 +64,10 @@ func NewBoard(sz int, name1, name2 string) (Board, error) {
 	return b, nil
 }
 
+func (b *Board) Size() int {
+	return b.size
+}
+
 func (b *Board) setInitialPosition() {
 	standard := []PieceType{Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook}
 	for i := 0; i < b.size && i < len(standard); i++ {
@@ -155,6 +159,12 @@ func (b *Board) Render() string {
 		// Строка заканчивается номером
 		sb.WriteRune(' ')
 		sb.WriteString(lineNumStr)
+		if y == b.size-1 {
+			sb.WriteRune(' ')
+			sb.WriteString(b.name1)
+			sb.WriteRune(' ')
+			sb.WriteString(b.name2)
+		}
 		sb.WriteRune('\n')
 	}
 
@@ -166,10 +176,6 @@ func (b *Board) Render() string {
 		sb.WriteRune(' ')
 		sb.WriteRune('a' + rune(i))
 	}
-	sb.WriteString("\n\n")
-	sb.WriteString(b.name1)
-	sb.WriteRune('\n')
-	sb.WriteString(b.name2)
 	sb.WriteRune('\n')
 
 	return sb.String()

@@ -6,10 +6,11 @@ import (
 )
 
 type Game struct {
-	Board   board.Board
-	turn    board.Color
-	history []move.Move
-	players map[board.Color]Player
+	IsPlaying bool
+	Board     board.Board
+	turn      board.Color
+	history   []move.Move
+	players   map[board.Color]Player
 }
 
 func NewGame(cfg GameConfig) (Game, error) {
@@ -18,22 +19,30 @@ func NewGame(cfg GameConfig) (Game, error) {
 		return Game{}, err
 	}
 	g := Game{
-		Board:   brd,
-		turn:    board.White,
-		history: make([]move.Move, 10),
-		players: make(map[board.Color]Player),
+		IsPlaying: true,
+		Board:     brd,
+		turn:      board.White,
+		history:   make([]move.Move, 10),
+		players:   make(map[board.Color]Player),
 	}
 	g.players[board.White] = Player{Name: cfg.player1}
 	g.players[board.Black] = Player{Name: cfg.player2}
 	return g, nil
 }
 
-func (g *Game) setPlayer(color board.Color, p Player) {
-	if _, ok := g.players[color]; !ok {
-		g.players[color] = p
+func (g *Game) ApplyMove(mv move.Move) {
+	if !mv.IsValid(&g.Board) {
+		return
 	}
+	// Перестановка фигуры
+	g.Board.SetToSquare(mv.To, g.Board.PieceAtSquare(mv.From))
+	g.Board.SetToSquare(mv.From, nil)
+	// Логгирование ходов
+	g.history = append(g.history, mv)
+	// Переход хода от белых к черным и наоборот
+	g.turn = g.turn.Opposite()
 }
 
-func (g *Game) ApplyMove(mv move.Move) {
-	// TODO
+func (g *Game) CurrentPlayer() Player {
+	return g.players[g.turn]
 }
