@@ -27,6 +27,8 @@ func (s Square) String() string {
 	return fmt.Sprintf("%s%d", file, rank)
 }
 
+func (s Square) EntityType() string { return "square" }
+
 func ParseSquare(s string) (Square, error) {
 	var sq Square
 	if len(s) < 2 {
@@ -37,7 +39,7 @@ func ParseSquare(s string) (Square, error) {
 	if err != nil {
 		return Square{}, InvalidConversion
 	}
-	sq.Y = int(res)
+	sq.Y = int(res) - 1
 	return sq, nil
 }
 
@@ -60,6 +62,10 @@ func NewBoard(sz int, name1, name2 string) (Board, error) {
 	}
 	b.setInitialPosition()
 	return b, nil
+}
+
+func (b *Board) Size() int {
+	return b.size
 }
 
 func (b *Board) setInitialPosition() {
@@ -153,6 +159,12 @@ func (b *Board) Render() string {
 		// Строка заканчивается номером
 		sb.WriteRune(' ')
 		sb.WriteString(lineNumStr)
+		if y == b.size-1 {
+			sb.WriteRune(' ')
+			sb.WriteString(b.name1)
+			sb.WriteRune(' ')
+			sb.WriteString(b.name2)
+		}
 		sb.WriteRune('\n')
 	}
 
@@ -164,10 +176,6 @@ func (b *Board) Render() string {
 		sb.WriteRune(' ')
 		sb.WriteRune('a' + rune(i))
 	}
-	sb.WriteString("\n\n")
-	sb.WriteString(b.name1)
-	sb.WriteRune('\n')
-	sb.WriteString(b.name2)
 	sb.WriteRune('\n')
 
 	return sb.String()

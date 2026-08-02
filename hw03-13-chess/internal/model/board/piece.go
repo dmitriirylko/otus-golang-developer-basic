@@ -8,6 +8,17 @@ const (
 	Black
 )
 
+func (c Color) Opposite() Color {
+	switch c {
+	case White:
+		return Black
+	case Black:
+		return White
+	default:
+		return NoneColor
+	}
+}
+
 type PieceType uint8
 
 const (
@@ -109,3 +120,5 @@ func NewPiece(t PieceType, c Color) *Piece {
 func (p Piece) SanLetter() rune {
 	return p.Type.SanLetter()
 }
+
+func (p *Piece) EntityType() string { return "piece" }

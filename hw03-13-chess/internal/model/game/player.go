@@ -27,3 +27,5 @@ func (p Player) GetMove() (move.Move, error) {
 	}
 	return mv, nil
 }
+
+func (p Player) EntityType() string { return "player" }
