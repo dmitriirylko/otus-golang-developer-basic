@@ -3,6 +3,7 @@
 import (
 	"bufio"
 	"chess/internal/model/game"
+	"chess/internal/model/move"
 	"fmt"
 	"os"
 	"strconv"
@@ -16,23 +17,23 @@ func main() {
 		fmt.Println("ERROR: Can't start new game")
 		return
 	}
-	linesNum := renderAndPrint(g)
 
-	var userInput string
+	linesNum := renderAndPrint(g)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for g.IsPlaying {
 		player := g.CurrentPlayer()
 		fmt.Printf("\033[K%s > ", player.Name)
+
 		if !scanner.Scan() {
 			break
 		}
-		userInput = strings.TrimSpace(scanner.Text())
-		// userInput = strings.ToLower(userInput)
+		userInput := strings.TrimSpace(scanner.Text())
 		if userInput == "" {
 			rerender(g, linesNum)
 			continue
 		}
+
 		parts := strings.Fields(userInput)
 
 		switch parts[0] {
@@ -47,6 +48,18 @@ func main() {
 				}
 			}
 			for i := 0; i < autoMoveCnt; i++ {
+			}
+
+		default:
+			mv, err := move.ParseMove(userInput)
+			if err != nil {
+				rerender(g, linesNum)
+				continue
+			}
+			isApplied := g.ApplyMove(mv)
+			if !isApplied {
+				rerender(g, linesNum)
+				continue
 			}
 		}
 		rerender(g, linesNum)

@@ -30,9 +30,9 @@ func NewGame(cfg GameConfig) (Game, error) {
 	return g, nil
 }
 
-func (g *Game) ApplyMove(mv move.Move) {
-	if !mv.IsValid(&g.Board) {
-		return
+func (g *Game) ApplyMove(mv move.Move) bool {
+	if !mv.IsValid(&g.Board, g.turn) {
+		return false
 	}
 	// Перестановка фигуры
 	g.Board.SetToSquare(mv.To, g.Board.PieceAtSquare(mv.From))
@@ -41,6 +41,7 @@ func (g *Game) ApplyMove(mv move.Move) {
 	g.history = append(g.history, mv)
 	// Переход хода от белых к черным и наоборот
 	g.turn = g.turn.Opposite()
+	return true
 }
 
 func (g *Game) CurrentPlayer() Player {

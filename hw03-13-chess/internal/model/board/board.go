@@ -39,7 +39,7 @@ func ParseSquare(s string) (Square, error) {
 	if err != nil {
 		return Square{}, InvalidConversion
 	}
-	sq.Y = int(res)
+	sq.Y = int(res) - 1
 	return sq, nil
 }
 

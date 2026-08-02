@@ -18,7 +18,11 @@ func NewMove(color board.Color, piece board.PieceType, from, to board.Square) Mo
 func (m Move) EntityType() string { return "move" }
 
 // TODO: проверка правил передвижения фигур
-func (m Move) IsValid(b *board.Board) bool {
+func (m Move) IsValid(b *board.Board, turn board.Color) bool {
+	if turn != m.Color {
+		return false
+	}
+
 	if b.PieceAtSquare(m.From) == nil {
 		return false
 	}
