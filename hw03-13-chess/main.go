@@ -5,9 +5,11 @@ import (
 	"chess/internal/model/game"
 	"chess/internal/model/move"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -47,8 +49,28 @@ func main() {
 					autoMoveCnt = n
 				}
 			}
+			fmt.Printf("\033[%dA", 1) // Поднимаем курсор вверх на 1 строчку (нужно после того как пользователь нажмет Enter)
 			for i := 0; i < autoMoveCnt; i++ {
+				mv, ok := g.RandomMove()
+				if !ok {
+					g.IsPlaying = false
+					break
+				}
+				// Вывод номер автохода
+				fmt.Printf("\033[K%s > automove...(%d/%d)\n", g.CurrentPlayer().Name, i+1, autoMoveCnt)
+				// Задержка 2-4 секунды на каждом автоходе
+				rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+				delay := 2000 + rng.Intn(2001)
+				time.Sleep(time.Duration(delay) * time.Millisecond)
+				// Применение автохода
+				isApplied := g.ApplyMove(mv)
+				if !isApplied {
+					rerender(g, linesNum)
+					continue
+				}
+				rerender(g, linesNum)
 			}
+			continue
 
 		default:
 			mv, err := move.ParseMove(userInput)
